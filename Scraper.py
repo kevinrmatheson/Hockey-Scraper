@@ -2,7 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import time
+import numpy as np
 
+# TO DO: need to create a csv to use for the entire data spit out for use with these functions
 def league_year_scrape( league, year):
     hockey_soup = BeautifulSoup("http://www.hockeydb.com/ihdb/stats/leagues.html", features="html.parser")
     ###For now we do current leagues
@@ -41,6 +43,28 @@ def league_year_scrape( league, year):
     else:
         return("The year you selected is either wrong, not implemented or otherwise incorrect. Refer to the readme to see the years available for your chosen league")
 
+    team_soup = BeautifulSoup(link, features = 'html.parser')
+    team_table = team_soup.findAll('table')
+    teams_body = team_table.findAll('tbody')
+    teams = []
+    team_links = []
+    for index, team in enumerate(teams):
+        teams.append(team_table.findAll('a')[index].text)
+        team_links.append(team_table.findAll('a')[index]["href"])
+    for index, team in enumerate(teams):
+        team_scrape(team_links[index], file_name)
+
+def team_scrape(link, file_name):
+    player_soup = BeautifulSoup( link, features = 'html.parser')
+    player_table = player_soup.findAll('table').findAll('tbody')
+    players = player_table.findAll('tr')
+    player_data = []
+    for index, player in enumerate(players):# '#	Player Name	Pos.	GP	G	A	Pts	PIM	GP	G	A	Pts	PIM	Birthplace	Age' [15]
+        player_data.append(players.findAll('td')[index].text)
+
+
+def player_scrape(link, file_name):
+    #implimented later. Will find height, weight and DOB
 
 if __name__ == "__main__":
     league_year_scrape(OHL, 2019)
